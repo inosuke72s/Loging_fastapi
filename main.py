@@ -28,6 +28,8 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
+class ForgetPassword(BaseModel):
+    email: EmailStr
 
 class ResetPassword(BaseModel):
     token: str
@@ -92,8 +94,8 @@ async def signin(user: UserLogin, db: AsyncSession = Depends(get_db)):
 
 
 @app.post("/forget-password")
-async def forget_password(email: EmailStr, db: AsyncSession = Depends(get_db)):
-    q = await db.execute(select(User).where(User.email == email))
+async def forget_password(data: ForgetPassword, db: AsyncSession = Depends(get_db)):
+    q = await db.execute(select(User).where(User.email == data.email))
     db_user = q.scalars().first()
     if not db_user:
         raise HTTPException(status_code=404, detail="Email not found")
